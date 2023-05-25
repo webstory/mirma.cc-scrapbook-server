@@ -24,7 +24,12 @@
   "dependencies": {
     "@aws-sdk/s3-request-presigner": "^3.338.0",
     "@fastify/cors": "^8.2.1",
-    "@iarna/toml": "^2.2.5",
-    "fastify": "^4.17.0"
+    "@types/mime-types": "^2.1.1",
+    "fastify": "^4.17.0",
+    "lodash": "^4.17.21",
+    "mime-types": "^2.1.35",
+    "moment": "^2.29.4",
+    "mongodb": "^5.5.0",
+    "toml": "^3.0.0"
   }
 }

@@ -1,3 +1,7 @@
+[db]
+mongodb = "mongodb://localhost:27017"
+dbname = "scrapbook"
+
 [s3]
 # region = "us-west-4"
 endpoint = "https://s3.us-west-004.backblazeb2.com"

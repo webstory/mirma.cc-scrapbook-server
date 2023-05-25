@@ -2,13 +2,17 @@ import fastify, { FastifyRequest } from 'fastify';
 import cors from '@fastify/cors';
 
 import { AssetClient } from './asset';
-import * as fs from 'fs';
-import toml from '@iarna/toml';
+import config from './config';
 import { S3ClientConfig } from '@aws-sdk/client-s3';
 
+import { files, pools } from './database';
+
+import fs from 'fs';
+import path from 'path';
+import mime from 'mime-types';
+
 // Global config
-const config = toml.parse(fs.readFileSync('config.toml', 'utf-8')) as any;
-const IBAssetClient = new AssetClient(config.s3 as S3ClientConfig, config.s3.bucket, config.s3.prefix);
+const assets = new AssetClient(config.s3 as S3ClientConfig, config.s3.bucket);
 
 const app = fastify({ logger: false });
 app.register(cors, {
@@ -18,7 +22,30 @@ app.register(cors, {
 });
 
 app.get(
-  '/img/*',
+  '/img/local/*',
+  async (
+    request: FastifyRequest<{
+      Params: { '*': string };
+    }>,
+    reply
+  ) => {
+    // Get the full path
+    const subpath = request.params['*'];
+    const fullPath = path.join(config.local, subpath);
+
+    if (fs.existsSync(fullPath)) {
+      const buffer = fs.readFileSync(fullPath);
+      // const stream = fs.createReadStream(fullPath); // Buggy
+      const mimeType = mime.lookup(fullPath) || 'application/octet-stream';
+      reply.code(200).type(mimeType).send(buffer);
+    } else {
+      reply.code(404).send('Not found');
+    }
+  }
+);
+
+app.get(
+  '/img/from-archive/*',
   async (
     request: FastifyRequest<{
       Params: { '*': string };
@@ -33,7 +60,7 @@ app.get(
     const range = request.headers.range;
     if (range && range.startsWith('bytes=')) {
       // Fetch the object size from S3
-      const metadata = await IBAssetClient.head(path);
+      const metadata = await assets.head(path);
       if (!metadata || !metadata.ContentLength) {
         reply.code(404).send('Not found');
         return;
@@ -45,7 +72,7 @@ app.get(
       start = parseInt(rangeStart, 10);
       end = rangeEnd ? parseInt(rangeEnd, 10) : end;
       // Get stream from S3 with range
-      const res = await IBAssetClient.get(path, { range: [start, end] });
+      const res = await assets.get(path, { range: [start, end] });
       if (res) {
         reply
           .code(206)
@@ -57,7 +84,7 @@ app.get(
     } else {
       let res;
       try {
-        res = await IBAssetClient.get(path, { etag: request.headers['if-none-match'] });
+        res = await assets.get(path, { etag: request.headers['if-none-match'] });
       } catch (err) {
         console.error(err);
         if (err === '304') {
@@ -98,14 +125,35 @@ app.get(
     reply
   ) => {
     const path = request.params['*'];
-    const url = await IBAssetClient.getSignedUrl(path);
+    const url = await assets.getSignedUrl(path);
     if (url) reply.redirect(302, url);
     else reply.code(404).send('Not found');
   }
 );
 
+app.get('/search/tags', async (request, reply) => {
+  const query = request.query as { q?: string; after?: string };
+  if (!query.q) {
+    reply.code(400).send('Bad request');
+    return;
+  }
+  const tags = query.q.split(',').map((tag) => tag.trim().toLowerCase());
+
+  let after = 0;
+  if (query.after && /^\d+$/.test(query.after)) {
+    after = Number(query.after);
+  }
+
+  const res = await files
+    .find({ tags: { $all: tags }, create_timestamp: { $gte: after } })
+    .sort({ create_timestamp: -1 })
+    .limit(10)
+    .toArray();
+  reply.send(res);
+});
+
 app.get('/', async (_request, reply) => {
-  const res = await IBAssetClient.get('Yupa/2540403_Yupa_4-1.jpg');
+  const res = await assets.get('hoya-inkbunny-pictures/Yupa/2540403_Yupa_4-1.jpg');
   if (res && res.Body) {
     const buffer = Buffer.from(await res.Body.transformToByteArray());
     reply
