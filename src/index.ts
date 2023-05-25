@@ -153,20 +153,7 @@ app.get('/search/tags', async (request, reply) => {
 });
 
 app.get('/', async (_request, reply) => {
-  const res = await assets.get('hoya-inkbunny-pictures/Yupa/2540403_Yupa_4-1.jpg');
-  if (res && res.Body) {
-    const buffer = Buffer.from(await res.Body.transformToByteArray());
-    reply
-      .headers({
-        'Content-Type': res.ContentType || 'application/octet-stream',
-        'Content-Length': res.ContentLength || 0,
-        ETag: res.ETag || '',
-        ...(res.Metadata || {}),
-      })
-      .send(buffer);
-  } else {
-    reply.code(404).send('Not found');
-  }
+  reply.send('Server is running');
 });
 
 async function main() {
