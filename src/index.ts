@@ -132,22 +132,22 @@ app.get(
 );
 
 app.get('/search/tags', async (request, reply) => {
-  const query = request.query as { q?: string; after?: string };
+  const query = request.query as { q?: string; before?: string };
   if (!query.q) {
     reply.code(400).send('Bad request');
     return;
   }
   const tags = query.q.split(',').map((tag) => tag.trim().toLowerCase());
 
-  let after = 0;
-  if (query.after && /^\d+$/.test(query.after)) {
-    after = Number(query.after);
+  let before = Date.now();
+  if (query.before && /^\d+$/.test(query.before)) {
+    before = Number(query.before);
   }
 
   const res = await files
-    .find({ tags: { $all: tags }, create_timestamp: { $gte: after } })
+    .find({ tags: { $all: tags }, create_timestamp: { $lte: before } })
     .sort({ create_timestamp: -1 })
-    .limit(10)
+    .limit(50)
     .toArray();
   reply.send(res);
 });
