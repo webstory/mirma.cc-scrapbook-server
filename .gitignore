@@ -6,7 +6,7 @@ node_modules
 build
 
 .env*
-config.toml
+!.env.example
 
 package-lock.json
 yarn.lock

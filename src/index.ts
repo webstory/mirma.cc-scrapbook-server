@@ -3,7 +3,6 @@ import cors from '@fastify/cors';
 
 import { AssetClient } from './asset';
 import config from './config';
-import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 import { files, pools } from './database';
 
@@ -12,7 +11,17 @@ import path from 'path';
 import mime from 'mime-types';
 
 // Global config
-const assets = new AssetClient(config.s3 as S3ClientConfig, config.s3.bucket);
+const assets = new AssetClient(
+  {
+    region: config.region,
+    endpoint: config.endpoint,
+    credentials: {
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+    },
+  },
+  config.bucket
+);
 
 const app = fastify({ logger: false });
 app.register(cors, {
@@ -157,7 +166,7 @@ app.get('/', async (_request, reply) => {
 });
 
 async function main() {
-  await app.listen({ port: 3000 }, (err, address) => {
+  await app.listen({ port: Number(process.env.PORT || 3000) }, (err, address) => {
     if (err) {
       console.error(err);
       process.exit(1);

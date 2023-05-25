@@ -1,19 +1,7 @@
-import fs from 'fs';
-import toml from 'toml';
-import { S3ClientConfig } from '@aws-sdk/client-s3';
+import * as dotenv from 'dotenv';
 
-export interface ApplicationConfig {
-  db: {
-    mongodb: string;
-    dbname: string;
-  };
-  s3: S3ClientConfig & {
-    bucket: string;
-  };
-  local: string;
-  [key: string]: unknown;
-}
+dotenv.config();
 
-const config = toml.parse(fs.readFileSync('config.toml', 'utf-8')) as ApplicationConfig;
+const config = process.env as { [key: string]: string };
 
 export default config;

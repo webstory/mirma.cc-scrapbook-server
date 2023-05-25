@@ -25,6 +25,7 @@
     "@aws-sdk/s3-request-presigner": "^3.338.0",
     "@fastify/cors": "^8.2.1",
     "@types/mime-types": "^2.1.1",
+    "dotenv": "^16.0.3",
     "fastify": "^4.17.0",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",

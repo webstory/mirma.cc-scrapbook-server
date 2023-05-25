@@ -28,7 +28,7 @@ Artist name is tagged as `artist:{artist name}` tag. Or you can use a dedicated 
 
 1. Setup
 
-   1. Copy `config.toml.example` to `config.toml`
+   1. Copy `.env.example` to `.env`
    2. Fill in the values
 
 ```toml
@@ -44,18 +44,17 @@ Artist name is tagged as `artist:{artist name}` tag. Or you can use a dedicated 
 #         |- submission_file.jpg
 local = "../res"
 
-[db]
+#[db]
 mongodb = "mongodb://localhost:27017"
 dbname = "scrapbook"
 
 # If you store your files into the s3 bucket, fill this below
-[s3]
-# region = "us-west-4"
+#[s3]
 endpoint = "https://s3.us-west-004.backblazeb2.com"
 bucket = "my-bucket"
 prefix = "prefix/"
 
-[s3.credentials]
+#[s3.credentials]
 accessKeyId = "AWS access key ID"
 secretAccessKey = "AWS secret access key ID"
 ```
