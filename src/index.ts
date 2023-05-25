@@ -154,7 +154,7 @@ app.get('/search/tags', async (request, reply) => {
   }
 
   const res = await files
-    .find({ tags: { $all: tags }, create_timestamp: { $lte: before } })
+    .find({ tags: { $all: tags }, create_timestamp: { $lte: before }, mark: { $ne: 'hidden' } })
     .sort({ create_timestamp: -1 })
     .limit(50)
     .toArray();
