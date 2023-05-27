@@ -31,7 +31,7 @@ app.register(cors, {
 });
 
 app.get(
-  '/img/local/*',
+  '/local/*',
   async (
     request: FastifyRequest<{
       Params: { '*': string };
@@ -54,7 +54,7 @@ app.get(
 );
 
 app.get(
-  '/img/from-archive/*',
+  '/from-archive/*',
   async (
     request: FastifyRequest<{
       Params: { '*': string };
@@ -137,6 +137,38 @@ app.get(
     const url = await assets.getSignedUrl(path);
     if (url) reply.redirect(302, url);
     else reply.code(404).send('Not found');
+  }
+);
+
+app.get(
+  '/img/*',
+  async (
+    request: FastifyRequest<{
+      Params: { '*': string };
+    }>,
+    reply
+  ) => {
+    const subpath = request.params['*'];
+    const fullPath = path.join(config.local, subpath);
+
+    // Attempt 1: Return local asset if exists
+    if (fs.existsSync(fullPath)) {
+      const buffer = fs.readFileSync(fullPath);
+      // const stream = fs.createReadStream(fullPath); // Buggy
+      const mimeType = mime.lookup(fullPath) || 'application/octet-stream';
+      reply.code(200).type(mimeType).send(buffer);
+      return;
+    }
+
+    // Attempt 2: Return from archive
+    const url = await assets.getSignedUrl(subpath);
+    if (url) {
+      reply.redirect(302, url);
+      return;
+    }
+
+    // Failure: File not exists anywhere
+    reply.code(404).send('Not found');
   }
 );
 
