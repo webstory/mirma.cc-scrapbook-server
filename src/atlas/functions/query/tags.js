@@ -6,7 +6,8 @@ exports = function({query, headers, body}, response) {
     }
     
     tags = tags.split(",").map((t)=>t.trim().toLowerCase());
-    if(!before || !Number.isFinite(before)) before = Date.now();
+    if(!before || !/^\d+$/.test(before)) before = Date.now();
+    else before = Number(before);
 
     const docs = context.services.get("mongodb-atlas").db("scrapbook").collection("files")
     .find({ tags: { $all: tags }, create_timestamp: { $lte: before } })
