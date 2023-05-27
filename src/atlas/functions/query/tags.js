@@ -2,7 +2,7 @@ exports = function({query, headers, body}, response) {
     let {tags, before} = query;
     
     if(!tags || tags.length === 0) {
-      return {};
+      return [];
     }
     
     tags = tags.split(",").map((t)=>t.trim().toLowerCase());
