@@ -1,9 +1,9 @@
 {
-  "app_id": "mirma-cc-scrapbook-server-yuqmi",
-  "config_version": 20210101,
-  "name": "mirma-cc-scrapbook-server",
-  "location": "US-VA",
-  "provider_region": "gcp-us-central1",
-  "deployment_model": "LOCAL",
-  "environment": "production"
+    "app_id": "mirma-cc-scrapbook-server-yuqmi",
+    "config_version": 20210101,
+    "name": "mirma-cc-scrapbook-server",
+    "location": "US-VA",
+    "provider_region": "gcp-us-central1",
+    "deployment_model": "LOCAL",
+    "environment": "production"
 }
