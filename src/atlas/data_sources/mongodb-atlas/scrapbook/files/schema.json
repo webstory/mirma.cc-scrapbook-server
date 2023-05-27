@@ -1,0 +1,62 @@
+{
+    "properties": {
+        "_id": {
+            "bsonType": "objectId"
+        },
+        "create_datetime": {
+            "bsonType": "string"
+        },
+        "create_timestamp": {
+            "bsonType": "double"
+        },
+        "description": {
+            "bsonType": "string"
+        },
+        "file_id": {
+            "bsonType": "int"
+        },
+        "file_name": {
+            "bsonType": "string"
+        },
+        "height": {
+            "bsonType": "int"
+        },
+        "md5": {
+            "bsonType": "string"
+        },
+        "mimetype": {
+            "bsonType": "string"
+        },
+        "pools": {
+            "bsonType": "array",
+            "items": {
+                "bsonType": "string"
+            }
+        },
+        "provider": {
+            "bsonType": "string"
+        },
+        "submission_id": {
+            "bsonType": "int"
+        },
+        "tags": {
+            "bsonType": "array",
+            "items": {
+                "bsonType": "string"
+            }
+        },
+        "title": {
+            "bsonType": "string"
+        },
+        "user_id": {
+            "bsonType": "int"
+        },
+        "username": {
+            "bsonType": "string"
+        },
+        "width": {
+            "bsonType": "int"
+        }
+    },
+    "title": "file"
+}
